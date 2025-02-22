@@ -11,9 +11,11 @@ router.post("/", async (req, res) => {
     await newUser.save();
     res.status(201).json(newUser);
   } catch (error) {
-    res.status(500).json({ error: "Error creating user" });
+    console.error("Error creating user:", error); // <-- Add this line to log errors
+    res.status(500).json({ error: "Error creating user", details: error.message });
   }
 });
+
 
 // Fetch user profile
 router.get("/:id", async (req, res) => {
