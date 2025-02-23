@@ -1,10 +1,36 @@
 "use client";
-import React from "react";
-import { useRouter } from "next/navigation"; // ✅ Use Next.js Router for Redirect
-import "./ChallengeCard.css"; // Keep this import if styles exist
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import "./ChallengeCard.css"; // ✅ Keep styling import
 
 const ChallengeCard = ({ challenge }) => {
   const router = useRouter();
+  const [profilePicture, setProfilePicture] = useState("/default-profile.png"); // Default PFP
+
+  // ✅ Fetch user profile to get correct profile picture
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const response = await fetch(`http://localhost:5001/api/users/${challenge.username}`);
+        if (!response.ok) throw new Error("Failed to fetch profile");
+
+        const data = await response.json();
+        setProfilePicture(data.profilePicture ? `http://localhost:5001${data.profilePicture}` : "/default-profile.png");
+      } catch (error) {
+        console.error("🔥 Error fetching user profile:", error);
+      }
+    };
+
+    fetchUserProfile();
+  }, [challenge.username]); // ✅ Runs when challenge username changes
+
+  // ✅ Redirect & Force Reload to Fix UI Bugs
+  const handleProfileRedirect = (username) => {
+    router.push(`/user/${username}`); // Navigate to user profile
+    setTimeout(() => {
+      window.location.reload(); // ✅ Forces styles to reapply
+    }, 100);
+  };
 
   // ✅ Redirect to Attempt Page with Challenge Info in URL
   const handleAttemptClick = () => {
@@ -19,8 +45,21 @@ const ChallengeCard = ({ challenge }) => {
         <h2 className="challenge-title">{challenge.title}</h2>
 
         <div className="challenge-user">
-          <div className="profile-pic"></div>
-          <span>@{challenge.username}</span>
+          {/* ✅ Correct Profile Picture from User Schema */}
+          <img 
+            src={profilePicture} 
+            alt="Profile" 
+            className="profile-pic"
+          />
+
+          {/* ✅ Clickable Username Redirects to Profile */}
+          <span 
+            className="challenge-username"
+            onClick={() => handleProfileRedirect(challenge.username)}
+            style={{ cursor: "pointer", color: "#007bff", textDecoration: "underline" }} // ✅ Clickable style
+          >
+            @{challenge.username}
+          </span>
         </div>
 
         <p className="challenge-details">
