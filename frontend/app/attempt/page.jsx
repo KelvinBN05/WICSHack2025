@@ -1,23 +1,23 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { auth } from "@/app/lib/firebase"; // ✅ Ensure correct import
+import { auth } from "@/app/lib/firebase"; //  Ensure correct import
 import "./styles/attempt.css"; 
 
 export default function AttemptPage() {
-  const { challengeId } = useParams(); // ✅ Get challengeId from URL
+  const { challengeId } = useParams(); //  Get challengeId from URL
   const [user, setUser] = useState(null);
   const [videoFile, setVideoFile] = useState(null);
   const [caption, setCaption] = useState("");
-  const router = useRouter(); // ✅ Handle navigation
+  const router = useRouter(); //  Handle navigation
 
   useEffect(() => {
-    // ✅ Check if user is logged in
+    //  Check if user is logged in
     const unsubscribe = auth.onAuthStateChanged((currentUser) => {
       if (currentUser) {
         setUser(currentUser);
       } else {
-        router.push("/login"); // ✅ Redirect if not logged in
+        router.push("/login"); //  Redirect if not logged in
       }
     });
 
@@ -25,7 +25,7 @@ export default function AttemptPage() {
   }, []);
 
   const handleFileChange = (e) => {
-    setVideoFile(e.target.files[0]); // ✅ Store selected video file
+    setVideoFile(e.target.files[0]); //  Store selected video file
   };
 
   const handleSubmitAttempt = async () => {
@@ -37,7 +37,7 @@ export default function AttemptPage() {
     const formData = new FormData();
     formData.append("video", videoFile);
     formData.append("caption", caption);
-    formData.append("username", user?.email.split("@")[0]); // ✅ Extract username from email
+    formData.append("username", user?.email.split("@")[0]); //  Extract username from email
 
     try {
       const response = await fetch(`http://localhost:5001/api/challenges/${challengeId}/attempt`, {
@@ -47,7 +47,7 @@ export default function AttemptPage() {
 
       if (!response.ok) throw new Error("Failed to upload attempt");
       alert("Attempt uploaded successfully!");
-      router.push("/feed"); // ✅ Redirect after successful upload
+      router.push("/feed"); //  Redirect after successful upload
     } catch (error) {
       console.error("🔥 Error uploading attempt:", error);
     }

@@ -3,21 +3,21 @@ const multer = require("multer");
 const Attempt = require("../models/Attempt"); // Create Attempt Model
 const router = express.Router();
 
-// ✅ Configure Multer for File Uploads
+//  Configure Multer for File Uploads
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
-// ✅ Handle Attempt Submission
+//  Handle Attempt Submission
 router.post("/", upload.single("video"), async (req, res) => {
   try {
     const { title, weight, reps, caption } = req.body;
 
-    // ✅ Validate Fields
+    //  Validate Fields
     if (!title || !weight || !reps || !caption || !req.file) {
       return res.status(400).json({ error: "All fields are required!" });
     }
 
-    // ✅ Store Attempt
+    //  Store Attempt
     const newAttempt = new Attempt({
       title,
       weight,

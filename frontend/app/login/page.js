@@ -42,29 +42,29 @@ const Login = () => {
     try {
       let userCredential;
       if (isSignup) {
-        // ✅ Sign up a new user
+        //  Sign up a new user
         userCredential = await createUserWithEmailAndPassword(auth, email, password);
       } else {
-        // ✅ Log in existing user
+        //  Log in existing user
         userCredential = await signInWithEmailAndPassword(auth, email, password);
       }
       const user = userCredential.user;
 
-      // ✅ Automatically extract username from email before '@'
+      //  Automatically extract username from email before '@'
       const username = email.split("@")[0];
 
-      // ✅ Default profile values
+      //  Default profile values
       const profilePicture = "/defaultProfile.png"; // Set default profile picture
       const bio = "New to GainsVille!"; // Set default bio
 
-      // ✅ Send user data to backend
+      //  Send user data to backend
       const response = await fetch("http://localhost:5001/api/users/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           uid: user.uid,
           email: user.email,
-          username, // ✅ Username set automatically
+          username, //  Username set automatically
           profilePicture,
           bio,
         }),

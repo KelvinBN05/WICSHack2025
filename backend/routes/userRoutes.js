@@ -5,26 +5,26 @@ const User = require("../models/User");
 
 const router = express.Router();
 
-// ✅ Configure Multer for storing profile images
+//  Configure Multer for storing profile images
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploads/"); // ✅ Save files to "uploads" directory
+    cb(null, "uploads/"); //  Save files to "uploads" directory
   },
   filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`); // ✅ Unique filename
+    cb(null, `${Date.now()}-${file.originalname}`); //  Unique filename
   },
 });
 
-// ✅ Multer Middleware
+//  Multer Middleware
 const upload = multer({ storage });
 
-// ✅ Register a New User
+//  Register a New User
 router.post("/register", async (req, res) => {
   console.log("🔍 Registration Request Received:", req.body);
   try {
     const { uid, username, email, profilePicture, bio } = req.body;
 
-    // ✅ Check if user already exists
+    //  Check if user already exists
     let newUser = await User.findOne({ uid });
 
     if (!newUser) {
@@ -39,12 +39,12 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// ✅ Fetch User Profile by Username
+//  Fetch User Profile by Username
 router.get("/:username", async (req, res) => {
   try {
     const { username } = req.params;
 
-    // ✅ Find user by `username`
+    //  Find user by `username`
     const user = await User.findOne({ username }).populate("completedChallenges");
 
     if (!user) {
@@ -58,7 +58,7 @@ router.get("/:username", async (req, res) => {
   }
 });
 
-// ✅ Update User Profile (Bio & Profile Picture Upload)
+//  Update User Profile (Bio & Profile Picture Upload)
 router.put("/:username", upload.single("profilePicture"), async (req, res) => {
   try {
     console.log("🔍 Update Request Received for:", req.params.username);
@@ -81,7 +81,7 @@ router.put("/:username", upload.single("profilePicture"), async (req, res) => {
 
     await user.save();
 
-    console.log("✅ Profile Updated Successfully:", user);
+    console.log(" Profile Updated Successfully:", user);
     res.json({ message: "Profile updated successfully", user });
   } catch (error) {
     console.error("🔥 Error updating user profile:", error);

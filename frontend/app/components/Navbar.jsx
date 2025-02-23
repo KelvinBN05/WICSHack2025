@@ -1,14 +1,14 @@
 "use client";
 import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
-import { auth } from "../lib/firebase"; // ✅ Import Firebase auth
-import "./styles/Navbar.css"; // ✅ Import styles
+import { auth } from "../lib/firebase"; //  Import Firebase auth
+import "./styles/Navbar.css"; //  Import styles
 
 const Navbar = () => {
   const router = useRouter();
   const [loggedInUser, setLoggedInUser] = useState("");
 
-  // ✅ Get logged-in user's username
+  //  Get logged-in user's username
   useEffect(() => {
     auth.onAuthStateChanged((user) => {
       if (user) {
@@ -17,11 +17,11 @@ const Navbar = () => {
     });
   }, []);
 
-  // ✅ Function to navigate & force reload for Feed and Profile
+  //  Function to navigate & force reload for Feed and Profile
   const handleReloadAndNavigate = (path) => {
     router.push(path); // Navigate
     setTimeout(() => {
-      window.location.reload(); // ✅ Forces styles to reapply
+      window.location.reload(); //  Forces styles to reapply
     }, 100); // Small delay ensures smooth transition
   };
 
@@ -30,7 +30,7 @@ const Navbar = () => {
       <div className="nav-container">
         <button className="nav-btn" onClick={() => handleReloadAndNavigate("/feed")}>🏠 Home</button>
         
-        {/* ✅ Profile Button redirects to user's own profile */}
+        {/*  Profile Button redirects to user's own profile */}
         <button className="nav-btn" onClick={() => handleReloadAndNavigate(`/user/${loggedInUser}`)}>
           👤 Profile
         </button>

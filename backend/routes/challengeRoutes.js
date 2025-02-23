@@ -3,7 +3,7 @@ const Challenge = require("../models/Challenge");
 
 const router = express.Router();
 
-// ✅ GET all challenges (FIX for "Cannot GET /api/challenges")
+//  GET all challenges (FIX for "Cannot GET /api/challenges")
 router.get("/", async (req, res) => {
   try {
     const challenges = await Challenge.find();
@@ -13,7 +13,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-// ✅ POST new challenge
+//  POST new challenge
 router.post("/", async (req, res) => {
   try {
     const { title, weight, reps, username } = req.body;

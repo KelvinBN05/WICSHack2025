@@ -21,7 +21,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <Navbar /> {/* ✅ Add Navbar at the top of all pages */}
+        <Navbar /> {/*  Add Navbar at the top of all pages */}
         {children}
       </body>
     </html>

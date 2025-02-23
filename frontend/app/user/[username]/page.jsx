@@ -2,10 +2,10 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { auth } from "../../lib/firebase";
-import "./styles/userProfile.css"; // ✅ Import styles
+import "./styles/userProfile.css"; //  Import styles
 
 export default function UserProfilePage() {
-  const { username } = useParams(); // ✅ Get username from URL
+  const { username } = useParams(); //  Get username from URL
   const [user, setUser] = useState(null);
   const [loggedInUser, setLoggedInUser] = useState(null);
   const [error, setError] = useState(null);
@@ -14,7 +14,7 @@ export default function UserProfilePage() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
 
-  // ✅ Fetch Logged-In User
+  //  Fetch Logged-In User
   useEffect(() => {
     auth.onAuthStateChanged((currentUser) => {
       if (currentUser) {
@@ -24,7 +24,7 @@ export default function UserProfilePage() {
     });
   }, []);
 
-  // ✅ Fetch User Profile
+  //  Fetch User Profile
   useEffect(() => {
     if (!username) return;
 
@@ -36,7 +36,7 @@ export default function UserProfilePage() {
         if (!response.ok) throw new Error("Failed to fetch profile");
 
         const data = await response.json();
-        console.log("✅ Fetched User:", data);
+        console.log(" Fetched User:", data);
         
         setUser(data);
         setBio(data.bio);
@@ -50,12 +50,12 @@ export default function UserProfilePage() {
     fetchUserProfile();
   }, [username]);
 
-  // ✅ Handle Profile Update
+  //  Handle Profile Update
   const handleUpdateProfile = async () => {
     const formData = new FormData();
     formData.append("bio", bio);
   
-    // ✅ Append profile picture only if a new file was selected
+    //  Append profile picture only if a new file was selected
     if (selectedFile) {
       formData.append("profilePicture", selectedFile);
     }
@@ -71,19 +71,19 @@ export default function UserProfilePage() {
       if (!response.ok) throw new Error("Failed to update profile");
   
       const updatedUser = await response.json();
-      console.log("✅ Updated User Data:", updatedUser);
+      console.log(" Updated User Data:", updatedUser);
   
-      // ✅ Ensure UI updates correctly after saving
+      //  Ensure UI updates correctly after saving
       setUser(updatedUser.user);
-      setProfilePicture(updatedUser.user.profilePicture); // ✅ Update profile picture immediately
-      setSelectedFile(null); // ✅ Reset selected file after successful upload
+      setProfilePicture(updatedUser.user.profilePicture); //  Update profile picture immediately
+      setSelectedFile(null); //  Reset selected file after successful upload
       setIsEditing(false);
     } catch (error) {
       console.error("🔥 Error updating profile:", error);
     }
   };
   
-  // ✅ Handle Image Preview Before Upload
+  //  Handle Image Preview Before Upload
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     setSelectedFile(file);
@@ -99,15 +99,15 @@ export default function UserProfilePage() {
   return (
     <div className="profile-container">
       <div className="profile-info">
-        {/* ✅ Profile Picture */}
+        {/*  Profile Picture */}
         {user.profilePicture ? (
           <img 
             src={selectedFile ? profilePicture : `http://localhost:5001${user.profilePicture}`} 
             alt="Profile" 
             className={`profile-pic ${profilePicture ? "loaded" : "loading"}`}
-            onLoad={() => console.log("✅ Image Loaded Successfully")}
+            onLoad={() => console.log("Image Loaded Successfully")}
             onError={(e) => {
-                e.target.src = "/defaultProfile.png"; // ✅ Force Default on Error
+                e.target.src = "/defaultProfile.png"; //  Force Default on Error
               }}
         />
         
@@ -121,12 +121,12 @@ export default function UserProfilePage() {
 
         <h1>{user.username}</h1>
 
-        {/* ✅ Show Edit Button ONLY if Logged-In User is Viewing Their Own Profile */}
+        {/*  Show Edit Button ONLY if Logged-In User is Viewing Their Own Profile */}
         {user.username === loggedInUser && (
           <button onClick={() => setIsEditing(true)}>Edit Profile</button>
         )}
 
-        {/* ✅ Show Editing Options Only If the User Clicks Edit */}
+        {/*  Show Editing Options Only If the User Clicks Edit */}
         {isEditing && (
           <>
             <input 
@@ -136,7 +136,7 @@ export default function UserProfilePage() {
               className="edit-bio" 
             />
             
-            {/* ✅ Upload Profile Picture */}
+            {/*  Upload Profile Picture */}
             <input 
               type="file" 
               onChange={handleFileChange} 
@@ -150,7 +150,7 @@ export default function UserProfilePage() {
         <p>{user.bio || "No bio available."}</p>
       </div>
 
-      {/* ✅ Challenges Completed */}
+      {/*  Challenges Completed */}
       <div className="challenges">
         <h2>Challenges Completed</h2>
         {user.completedChallenges && user.completedChallenges.length > 0 ? (
