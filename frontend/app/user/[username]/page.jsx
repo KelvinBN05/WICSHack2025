@@ -1,36 +1,46 @@
 "use client";
-import { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import { auth } from "../../lib/firebase"; // ✅ Firebase for authentication
+import { auth } from "../../lib/firebase";
 import "./styles/userProfile.css"; // ✅ Import styles
 
 export default function UserProfilePage() {
   const { username } = useParams(); // ✅ Get username from URL
   const [user, setUser] = useState(null);
-  const [loggedInUsername, setLoggedInUsername] = useState(null);
+  const [loggedInUser, setLoggedInUser] = useState(null);
   const [error, setError] = useState(null);
   const [bio, setBio] = useState(""); // Editable bio
   const [profilePicture, setProfilePicture] = useState(""); // Editable profile picture
+  const [selectedFile, setSelectedFile] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
 
+  // ✅ Fetch Logged-In User
   useEffect(() => {
-    // ✅ Fetch logged-in user's username from Firebase Auth
     auth.onAuthStateChanged((currentUser) => {
       if (currentUser) {
-        setLoggedInUsername(currentUser.email.split("@")[0]); // ✅ Extract username from email
+        const emailUsername = currentUser.email.split("@")[0]; // Extract username from email
+        setLoggedInUser(emailUsername);
       }
     });
+  }, []);
 
+  // ✅ Fetch User Profile
+  useEffect(() => {
     if (!username) return;
 
     const fetchUserProfile = async () => {
       try {
+        console.log("🔍 Fetching profile for:", username);
         const response = await fetch(`http://localhost:5001/api/users/${username}`);
+        
         if (!response.ok) throw new Error("Failed to fetch profile");
+
         const data = await response.json();
+        console.log("✅ Fetched User:", data);
+        
         setUser(data);
         setBio(data.bio);
-        setProfilePicture(data.profilePicture || "/default-profile.png"); // ✅ Use default if empty
+        setProfilePicture(data.profilePicture);
       } catch (error) {
         console.error("🔥 Error fetching profile:", error);
         setError("Failed to load profile.");
@@ -40,20 +50,43 @@ export default function UserProfilePage() {
     fetchUserProfile();
   }, [username]);
 
+  // ✅ Handle Profile Update
   const handleUpdateProfile = async () => {
+    const formData = new FormData();
+    formData.append("bio", bio);
+    if (selectedFile) {
+      formData.append("profilePicture", selectedFile);
+    }
+
+    console.log("🔍 Sending request:", formData.get("bio"), formData.get("profilePicture"));
+
     try {
       const response = await fetch(`http://localhost:5001/api/users/${username}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ bio, profilePicture }),
+        body: formData,
       });
 
-      if (!response.ok) throw new Error("Failed to update profile");
+      console.log("📡 Response Status:", response.status);
       const updatedUser = await response.json();
+      console.log("✅ Response Data:", updatedUser);
+
+      if (!response.ok) throw new Error("Failed to update profile");
+
       setUser(updatedUser.user);
+      setProfilePicture(updatedUser.user.profilePicture);
       setIsEditing(false);
     } catch (error) {
       console.error("🔥 Error updating profile:", error);
+    }
+  };
+
+  // ✅ Handle Image Preview Before Upload
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setSelectedFile(file);
+    if (file) {
+      const previewURL = URL.createObjectURL(file);
+      setProfilePicture(previewURL);
     }
   };
 
@@ -62,46 +95,57 @@ export default function UserProfilePage() {
 
   return (
     <div className="profile-container">
-      {/* ✅ Profile Section */}
       <div className="profile-info">
-        <img src={profilePicture} alt="Profile" className="profile-pic" />
+        {/* ✅ Profile Picture */}
+        {user.profilePicture ? (
+          <img
+            src={selectedFile ? profilePicture : `http://localhost:5001${user.profilePicture}`} 
+            alt="Profile"
+            className="profile-pic"
+          />
+        ) : (
+          <img 
+            src="/default-profile.png" 
+            alt="Default Profile" 
+            className="profile-pic" 
+          />
+        )}
 
         <h1>{user.username}</h1>
 
-        {isEditing ? (
-          <>
-            <input
-              type="text"
-              value={bio}
-              onChange={(e) => setBio(e.target.value)}
-              className="edit-bio"
-            />
-            <input
-              type="text"
-              value={profilePicture}
-              onChange={(e) => setProfilePicture(e.target.value)}
-              className="edit-profile-pic"
-              placeholder="Enter image URL"
-            />
-          </>
-        ) : (
-          <p>{user.bio}</p>
+        {/* ✅ Show Edit Button ONLY if Logged-In User is Viewing Their Own Profile */}
+        {user.username === loggedInUser && (
+          <button onClick={() => setIsEditing(true)}>Edit Profile</button>
         )}
 
-        {/* ✅ Show Edit Button if Logged-In User is Viewing Their Own Profile */}
-        {username === loggedInUsername && ( 
-          isEditing ? (
+        {/* ✅ Show Editing Options Only If the User Clicks Edit */}
+        {isEditing && (
+          <>
+            <input 
+              type="text" 
+              value={bio} 
+              onChange={(e) => setBio(e.target.value)} 
+              className="edit-bio" 
+            />
+            
+            {/* ✅ Upload Profile Picture */}
+            <input 
+              type="file" 
+              onChange={handleFileChange} 
+              className="edit-profile-pic"
+            />
+
             <button onClick={handleUpdateProfile}>Save</button>
-          ) : (
-            <button onClick={() => setIsEditing(true)}>Edit Profile</button>
-          )
+          </>
         )}
+
+        <p>{user.bio || "No bio available."}</p>
       </div>
 
       {/* ✅ Challenges Completed */}
       <div className="challenges">
         <h2>Challenges Completed</h2>
-        {user.completedChallenges.length > 0 ? (
+        {user.completedChallenges && user.completedChallenges.length > 0 ? (
           user.completedChallenges.map((challenge) => (
             <div key={challenge._id} className="challenge-card">
               <h3>{challenge.title}</h3>

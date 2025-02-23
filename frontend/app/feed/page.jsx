@@ -78,6 +78,7 @@ export default function FeedPage() {
   return (
     <ProtectedRoute> {/* ✅ Wrap in ProtectedRoute */}
       <div className="feed-container">
+        
         <header className="header">
           <div className="header-container">
             <img src="/Rectangle.png" alt="Background" className="header-bg" />

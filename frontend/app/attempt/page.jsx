@@ -1,95 +1,66 @@
 "use client";
-import React, { useState } from "react";
-import { useSearchParams } from "next/navigation"; // ✅ Read challenge details from URL
-import "./styles/attempt.css"; // ✅ Import styles
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { auth } from "@/app/lib/firebase"; // ✅ Ensure correct import
+import "./styles/attempt.css"; 
 
 export default function AttemptPage() {
-  const searchParams = useSearchParams();
-  const title = searchParams.get("title");
-  const weight = searchParams.get("weight");
-  const reps = searchParams.get("reps");
-
+  const { challengeId } = useParams(); // ✅ Get challengeId from URL
+  const [user, setUser] = useState(null);
   const [videoFile, setVideoFile] = useState(null);
   const [caption, setCaption] = useState("");
+  const router = useRouter(); // ✅ Handle navigation
 
-  // ✅ Handle Video Selection
-  const handleVideoChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setVideoFile(file);
-    }
+  useEffect(() => {
+    // ✅ Check if user is logged in
+    const unsubscribe = auth.onAuthStateChanged((currentUser) => {
+      if (currentUser) {
+        setUser(currentUser);
+      } else {
+        router.push("/login"); // ✅ Redirect if not logged in
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const handleFileChange = (e) => {
+    setVideoFile(e.target.files[0]); // ✅ Store selected video file
   };
 
-  // ✅ Handle Attempt Submission
-  const handleUpload = async (e) => {
-    e.preventDefault();
-
+  const handleSubmitAttempt = async () => {
     if (!videoFile) {
-      alert("Please upload a video!");
+      alert("Please select a video file.");
       return;
     }
 
     const formData = new FormData();
     formData.append("video", videoFile);
     formData.append("caption", caption);
-    formData.append("title", title); // Attach challenge details
-    formData.append("weight", weight);
-    formData.append("reps", reps);
+    formData.append("username", user?.email.split("@")[0]); // ✅ Extract username from email
 
     try {
-      const response = await fetch("http://localhost:5001/api/attempts", {
+      const response = await fetch(`http://localhost:5001/api/challenges/${challengeId}/attempt`, {
         method: "POST",
         body: formData,
       });
 
-      if (response.ok) {
-        alert("Video uploaded successfully!");
-        setVideoFile(null);
-        setCaption("");
-      } else {
-        console.error("Error uploading video");
-      }
+      if (!response.ok) throw new Error("Failed to upload attempt");
+      alert("Attempt uploaded successfully!");
+      router.push("/feed"); // ✅ Redirect after successful upload
     } catch (error) {
-      console.error("Upload failed:", error);
+      console.error("🔥 Error uploading attempt:", error);
     }
   };
 
   return (
     <div className="attempt-container">
-      {/* ✅ Header (Unchanged) */}
-      <header className="header">
-        <div className="header-container">
-          <img src="/Rectangle.png" alt="Background" className="header-bg" />
-          <img src="/dbL.png" alt="Left Dumbbell" className="dumbbell" />
-          <img src="/gainsville.png" alt="GainsVille Logo" className="gainsville-text" />
-          <img src="/dbR.png" alt="Right Dumbbell" className="dumbbell" />
-        </div>
-      </header>
-
-      {/* ✅ Challenge Details */}
-      <div className="challenge-info">
-        <h1>{title}</h1>
-        <p><strong>Weight:</strong> {weight} lbs</p>
-        <p><strong>Reps:</strong> {reps}</p>
-      </div>
-
-      {/* ✅ Upload Form */}
-      <form className="upload-form" onSubmit={handleUpload}>
-        <label className="video-upload">
-          <input type="file" accept="video/*" onChange={handleVideoChange} hidden />
-          <div className="upload-box">🎥 Tap to Upload New Attempt</div>
-        </label>
-
-        <input
-          type="text"
-          placeholder="Enter Caption..."
-          value={caption}
-          onChange={(e) => setCaption(e.target.value)}
-          className="caption-input"
-        />
-
-        <button type="submit" className="upload-btn">Upload</button>
-      </form>
+      <h1>Attempt Challenge</h1>
+      {user ? <p>Logged in as {user.email}</p> : <p>Redirecting to login...</p>}
+      
+      <input type="file" accept="video/*" onChange={handleFileChange} />
+      <input type="text" value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="Enter caption" />
+      <button onClick={handleSubmitAttempt}>Upload Attempt</button>
     </div>
   );
 }

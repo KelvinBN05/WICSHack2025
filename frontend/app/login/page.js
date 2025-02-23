@@ -74,7 +74,7 @@ const Login = () => {
 
       if (response.ok) {
         console.log(data.message);
-        router.push("/"); // Redirect to home or user dashboard
+        router.push("/feed"); // Redirect to home or user dashboard
       } else {
         setError(data.error || "Registration failed. Please try again.");
       }
