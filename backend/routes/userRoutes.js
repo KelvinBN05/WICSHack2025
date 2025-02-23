@@ -1,7 +1,10 @@
 // routes/userRoutes.js
 const express = require("express");
-const User = require("../models/User");
+const User = require("../models/User"); // ✅ Import User model
+const Challenge = require("../models/Challenge"); // ✅ Import Challenge model (this was missing!)
+
 const router = express.Router();
+
 
 // Create a new user
 router.post("/register", async (req, res) => {
@@ -24,14 +27,32 @@ router.post("/register", async (req, res) => {
 
 
 // Fetch user profile
-router.get("/:id", async (req, res) => {
+router.get("/:username", async (req, res) => {
   try {
-    const user = await User.findById(req.params.id).populate("completedChallenges");
-    res.json(user);
+    const { username } = req.params;
+
+    // ✅ Fetch user by username instead of ID
+    const user = await User.findOne({ username }); 
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // ✅ Fetch challenges user has completed (assuming `completedBy` field exists)
+    const completedChallenges = await Challenge.find({ completedBy: username });
+
+    res.json({
+      username: user.username,
+      bio: user.bio,
+      profilePicture: user.profilePicture,
+      completedChallenges,
+    });
   } catch (error) {
-    res.status(500).json({ error: "User not found" });
+    console.error("🔥 Error fetching user profile:", error);
+    res.status(500).json({ error: "Failed to fetch user profile" });
   }
 });
+
 
 // Update profile (username, bio, profile picture)
 router.put("/:id", async (req, res) => {
