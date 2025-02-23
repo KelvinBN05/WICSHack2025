@@ -1,10 +1,7 @@
 // routes/userRoutes.js
 const express = require("express");
-const User = require("../models/User"); // ✅ Import User model
-const Challenge = require("../models/Challenge"); // ✅ Import Challenge model (this was missing!)
-
+const User = require("../models/User");
 const router = express.Router();
-
 
 // Create a new user
 router.post("/register", async (req, res) => {
@@ -25,28 +22,19 @@ router.post("/register", async (req, res) => {
   }
 });
 
-
-// Fetch user profile
+// Fetch user profile using username
 router.get("/:username", async (req, res) => {
   try {
     const { username } = req.params;
 
-    // ✅ Fetch user by username instead of ID
-    const user = await User.findOne({ username }); 
+    // Find user by `username` instead of `_id`
+    const user = await User.findOne({ username }).populate("completedChallenges");
 
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    // ✅ Fetch challenges user has completed (assuming `completedBy` field exists)
-    const completedChallenges = await Challenge.find({ completedBy: username });
-
-    res.json({
-      username: user.username,
-      bio: user.bio,
-      profilePicture: user.profilePicture,
-      completedChallenges,
-    });
+    res.json(user);
   } catch (error) {
     console.error("🔥 Error fetching user profile:", error);
     res.status(500).json({ error: "Failed to fetch user profile" });
@@ -55,13 +43,37 @@ router.get("/:username", async (req, res) => {
 
 
 // Update profile (username, bio, profile picture)
-router.put("/:id", async (req, res) => {
+// ✅ UPDATE User Profile (Allow Bio & Profile Picture Updates)
+router.put("/:username", async (req, res) => {
   try {
-    const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.json(updatedUser);
+    const { username } = req.params;
+    const { bio, profilePicture } = req.body;
+
+    console.log("🔍 Received request to update:", username, bio, profilePicture); // ✅ Debugging Log
+
+    // ✅ Check if user exists before updating
+    const existingUser = await User.findOne({ username });
+
+    if (!existingUser) {
+      console.error("🚨 User not found:", username);
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // ✅ Update user
+    existingUser.bio = bio || existingUser.bio;
+    existingUser.profilePicture = profilePicture || existingUser.profilePicture;
+
+    await existingUser.save(); // ✅ Save the updated user
+
+    console.log("✅ User updated successfully:", existingUser);
+
+    res.json({ message: "Profile updated successfully", user: existingUser });
   } catch (error) {
-    res.status(500).json({ error: "Could not update profile" });
+    console.error("🔥 Error updating user profile:", error);
+    res.status(500).json({ error: "Failed to update user profile", details: error.message });
   }
 });
 
 module.exports = router;
+
+

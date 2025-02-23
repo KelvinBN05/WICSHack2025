@@ -1,22 +1,23 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { auth } from "../../lib/firebase";
-import "./styles/userProfile.css";
+import { auth } from "../../lib/firebase"; // ✅ Firebase for authentication
+import "./styles/userProfile.css"; // ✅ Import styles
 
 export default function UserProfilePage() {
-  const { username } = useParams();
+  const { username } = useParams(); // ✅ Get username from URL
   const [user, setUser] = useState(null);
-  const [loggedInUser, setLoggedInUser] = useState(null);
+  const [loggedInUsername, setLoggedInUsername] = useState(null);
   const [error, setError] = useState(null);
-  const [bio, setBio] = useState(""); 
-  const [profilePicture, setProfilePicture] = useState(""); 
+  const [bio, setBio] = useState(""); // Editable bio
+  const [profilePicture, setProfilePicture] = useState(""); // Editable profile picture
   const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
+    // ✅ Fetch logged-in user's username from Firebase Auth
     auth.onAuthStateChanged((currentUser) => {
       if (currentUser) {
-        setLoggedInUser(currentUser.email);
+        setLoggedInUsername(currentUser.email.split("@")[0]); // ✅ Extract username from email
       }
     });
 
@@ -29,7 +30,7 @@ export default function UserProfilePage() {
         const data = await response.json();
         setUser(data);
         setBio(data.bio);
-        setProfilePicture(data.profilePicture || "/defaultprofile.png"); // ✅ Use default image if empty
+        setProfilePicture(data.profilePicture || "/default-profile.png"); // ✅ Use default if empty
       } catch (error) {
         console.error("🔥 Error fetching profile:", error);
         setError("Failed to load profile.");
@@ -63,9 +64,8 @@ export default function UserProfilePage() {
     <div className="profile-container">
       {/* ✅ Profile Section */}
       <div className="profile-info">
-        {profilePicture && (
-          <img src={profilePicture} alt="Profile" className="profile-pic" />
-        )}
+        <img src={profilePicture} alt="Profile" className="profile-pic" />
+
         <h1>{user.username}</h1>
 
         {isEditing ? (
@@ -88,7 +88,8 @@ export default function UserProfilePage() {
           <p>{user.bio}</p>
         )}
 
-        {user.username === loggedInUser && ( 
+        {/* ✅ Show Edit Button if Logged-In User is Viewing Their Own Profile */}
+        {username === loggedInUsername && ( 
           isEditing ? (
             <button onClick={handleUpdateProfile}>Save</button>
           ) : (
