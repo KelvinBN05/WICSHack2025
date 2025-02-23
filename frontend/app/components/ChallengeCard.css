@@ -1,0 +1,94 @@
+.challenge-card {
+    position: relative;
+    width: 350px;
+    height: 180px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Background Image */
+  .challenge-bg {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+    object-fit: cover;
+    z-index: -1;
+  }
+  
+  /* Content */
+  .challenge-content {
+    position: relative;
+    width: 90%;
+    padding: 15px;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  /* Title */
+  .challenge-title {
+    font-size: 18px;
+    font-weight: bold;
+    text-decoration: underline;
+    margin-bottom: 5px;
+  }
+  
+  /* User Info */
+  .challenge-user {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+  }
+  
+  .profile-pic {
+    width: 20px;
+    height: 20px;
+    background-color: lightgray;
+    border-radius: 50%;
+    margin-right: 5px;
+  }
+  
+  /* Details */
+  .challenge-details {
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+  
+  /* Buttons */
+  .challenge-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+  }
+  
+  .attempt-btn {
+    background-color: green;
+    color: white;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .like-btn {
+    background-color: red;
+    color: white;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  
+  .comment-btn {
+    background-color: black;
+    color: white;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  
