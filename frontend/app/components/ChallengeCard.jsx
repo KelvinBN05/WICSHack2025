@@ -1,12 +1,12 @@
 "use client";
 import React from "react";
-import { useRouter } from "next/navigation"; // ✅ Use Next.js Router for Redirect
+import { useRouter } from "next/navigation"; // Use Next.js Router for Redirect
 import "./ChallengeCard.css"; // Keep this import if styles exist
 
 const ChallengeCard = ({ challenge }) => {
   const router = useRouter();
 
-  // ✅ Redirect to Attempt Page with Challenge Info in URL
+  // Redirect to Attempt Page with Challenge Info in URL
   const handleAttemptClick = () => {
     router.push(`/attempt?title=${encodeURIComponent(challenge.title)}&weight=${challenge.weight}&reps=${challenge.reps}`);
   };

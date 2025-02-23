@@ -1,8 +1,8 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Modal from "react-modal";
-import ChallengeCard from "../components/ChallengeCard"; // ✅ Import ChallengeCard component
-import "./feed.css"; // ✅ Import styles
+import ChallengeCard from "../components/ChallengeCard"; // Import ChallengeCard component
+import "./feed.css"; // Import styles
 
 export default function FeedPage() {
   const [challenges, setChallenges] = useState([]);
@@ -14,14 +14,14 @@ export default function FeedPage() {
     username: "",
   });
 
-  // ✅ Fix React Modal Warning
+  // Fix React Modal Warning
   useEffect(() => {
     if (typeof window !== "undefined") {
       Modal.setAppElement(document.body);
     }
   }, []);
 
-  // ✅ Fetch challenges from backend
+  // Fetch challenges from backend
   useEffect(() => {
     const fetchChallenges = async () => {
       try {
@@ -37,13 +37,13 @@ export default function FeedPage() {
     fetchChallenges();
   }, []);
 
-  // ✅ Handle input changes in modal
+  // Handle input changes in modal
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // ✅ Handle challenge creation
+  // Handle challenge creation
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -65,7 +65,7 @@ export default function FeedPage() {
 
   return (
     <div className="feed-container">
-      {/* ✅ Header (Unchanged) */}
+      {/* Header (Unchanged) */}
       <header className="header">
         <div className="header-container">
           <img src="/Rectangle.png" alt="Background" className="header-bg" />
@@ -75,12 +75,12 @@ export default function FeedPage() {
         </div>
       </header>
 
-      {/* ✅ Floating Button to Open Modal (Bottom Left) */}
+      {/* Floating Button to Open Modal (Bottom Left) */}
       <button className="create-btn" onClick={() => setIsModalOpen(true)}>
         + Create Challenge
       </button>
 
-      {/* ✅ Modal for Creating Challenges */}
+      {/* Modal for Creating Challenges */}
       <Modal
         isOpen={isModalOpen}
         onRequestClose={() => setIsModalOpen(false)}
@@ -97,7 +97,7 @@ export default function FeedPage() {
         <button className="close-btn" onClick={() => setIsModalOpen(false)}>Close</button>
       </Modal>
 
-      {/* ✅ Display Challenges Using `ChallengeCard` */}
+      {/* Display Challenges Using `ChallengeCard` */}
       <div className="challenge-list">
         {challenges.length === 0 && <p>No challenges yet.</p>}
         {challenges.map((challenge) => (

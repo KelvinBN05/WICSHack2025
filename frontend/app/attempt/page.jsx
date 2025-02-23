@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
-import { useSearchParams } from "next/navigation"; // ✅ Read challenge details from URL
-import "./styles/attempt.css"; // ✅ Import styles
+import { useSearchParams } from "next/navigation"; // Read challenge details from URL
+import "./styles/attempt.css"; //Import styles
 
 export default function AttemptPage() {
   const searchParams = useSearchParams();
@@ -12,7 +12,7 @@ export default function AttemptPage() {
   const [videoFile, setVideoFile] = useState(null);
   const [caption, setCaption] = useState("");
 
-  // ✅ Handle Video Selection
+  //  Handle Video Selection
   const handleVideoChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -20,7 +20,7 @@ export default function AttemptPage() {
     }
   };
 
-  // ✅ Handle Attempt Submission
+  //  Handle Attempt Submission
   const handleUpload = async (e) => {
     e.preventDefault();
 
@@ -56,7 +56,7 @@ export default function AttemptPage() {
 
   return (
     <div className="attempt-container">
-      {/* ✅ Header (Unchanged) */}
+      {/* Header (Unchanged) */}
       <header className="header">
         <div className="header-container">
           <img src="/Rectangle.png" alt="Background" className="header-bg" />
@@ -66,14 +66,14 @@ export default function AttemptPage() {
         </div>
       </header>
 
-      {/* ✅ Challenge Details */}
+      {/* Challenge Details */}
       <div className="challenge-info">
         <h1>{title}</h1>
         <p><strong>Weight:</strong> {weight} lbs</p>
         <p><strong>Reps:</strong> {reps}</p>
       </div>
 
-      {/* ✅ Upload Form */}
+      {/* Upload Form */}
       <form className="upload-form" onSubmit={handleUpload}>
         <label className="video-upload">
           <input type="file" accept="video/*" onChange={handleVideoChange} hidden />
