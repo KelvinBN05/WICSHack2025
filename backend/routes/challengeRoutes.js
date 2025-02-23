@@ -1,44 +1,33 @@
-// routes/challengeRoutes.js
 const express = require("express");
 const Challenge = require("../models/Challenge");
+
 const router = express.Router();
 
-// Create a new challenge
-router.post("/", async (req, res) => {
-  try {
-    const challenge = new Challenge(req.body);
-    await challenge.save();
-    res.status(201).json(challenge);
-  } catch (error) {
-    res.status(500).json({ error: "Error creating challenge" });
-  }
-});
-
-// Get all challenges
+// ✅ GET all challenges (FIX for "Cannot GET /api/challenges")
 router.get("/", async (req, res) => {
   try {
-    const challenges = await Challenge.find().populate("creator", "username");
+    const challenges = await Challenge.find();
     res.json(challenges);
   } catch (error) {
     res.status(500).json({ error: "Error fetching challenges" });
   }
 });
 
-// Submit a challenge attempt
-router.post("/:id/attempt", async (req, res) => {
+// ✅ POST new challenge
+router.post("/", async (req, res) => {
   try {
-    const challenge = await Challenge.findById(req.params.id);
-    if (!challenge) return res.status(404).json({ error: "Challenge not found" });
+    const { title, weight, reps, username } = req.body;
 
-    challenge.attempts.push({
-      user: req.body.userId,
-      videoUrl: req.body.videoUrl,
-    });
-    
-    await challenge.save();
-    res.json({ message: "Challenge attempt recorded!" });
+    if (!title || !weight || !reps || !username) {
+      return res.status(400).json({ error: "All fields are required" });
+    }
+
+    const newChallenge = new Challenge({ title, weight, reps, username });
+    await newChallenge.save();
+    res.status(201).json(newChallenge);
   } catch (error) {
-    res.status(500).json({ error: "Error submitting attempt" });
+    console.error("🔥 Error creating challenge:", error);
+    res.status(500).json({ error: "Error creating challenge", details: error.message });
   }
 });
 
