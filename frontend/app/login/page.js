@@ -54,7 +54,7 @@ const Login = () => {
       const username = email.split("@")[0];
 
       // ✅ Default profile values
-      const profilePicture = "/defaultprofile.png"; // Set default profile picture
+      const profilePicture = "/defaultProfile.png"; // Set default profile picture
       const bio = "New to GainsVille!"; // Set default bio
 
       // ✅ Send user data to backend

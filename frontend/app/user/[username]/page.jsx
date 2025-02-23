@@ -106,12 +106,14 @@ export default function UserProfilePage() {
             alt="Profile" 
             className={`profile-pic ${profilePicture ? "loaded" : "loading"}`}
             onLoad={() => console.log("✅ Image Loaded Successfully")}
-            onError={() => console.error("🔥 Error Loading Image")}
+            onError={(e) => {
+                e.target.src = "/defaultProfile.png"; // ✅ Force Default on Error
+              }}
         />
         
         ) : (
           <img 
-            src="/default-profile.png" 
+            src="/defaultProfile.png"
             alt="Default Profile" 
             className="profile-pic" 
           />
