@@ -1,0 +1,137 @@
+/* Login Page Styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #1D1E2C;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+  
+  .login-container {
+    /* text-align: center; */
+    /* display: flex; */
+    /* justify-content: center; */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Horizontally center the login box */
+    align-items: center;     /* Vertically center the login box */
+    height: 100vh;
+  }
+  
+  .logo {
+    background-color: #4a4a4a;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+  }
+  
+  h1 {
+    font-size: 24px;
+    color: #d1d1d1;
+  }
+  
+  .login-box {
+    background-color: #333;
+    padding: 20px;
+    border-radius: 10px;
+    width: 300px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  }
+  
+  form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  label {
+    font-size: 14px;
+    text-align: left;
+    margin: 5px 0;
+  }
+  
+  input {
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #777;
+    border-radius: 4px;
+  }
+  
+  button {
+    background-color: #222;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #444;
+  }
+  
+  a {
+    color: #ddd;
+    font-size: 12px;
+    text-decoration: none;
+    margin-top: 10px;
+  }
+
+  h2 {
+    font-size: 12px;
+  }
+
+  .header {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      position: relative;
+      margin-bottom: 20px;
+    }
+  
+  /* Set the header container as a reference for absolute positioning */
+  .header-container {
+    position: relative; /* Ensures children (dumbbells) position correctly */
+    width: 100%;
+    max-width: 900px; /* Keep it centered */
+    height: 250px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  /* Background Rectangle - Centered & Smaller */
+  .header-bg {
+    position: absolute;
+    width: 100%; /* Stretch across */
+    max-width: 450px; /* Adjust width */
+    height: 130px; /* Adjust height */
+    object-fit: cover;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -130%); /* Centers it */
+
+    z-index: -1; /* Moves behind other elements */
+  }
+  
+  /* GainsVille Logo */
+  .gainsville-text {
+    width: 250px; /* Adjust size */
+    height: auto;
+    position: top; /* Keep it on top */
+    top: 10000%;
+    transform: translateY(-100px);
+  }
+  
+  /* Dumbbell Icons - Move them outward */
+  .dumbbell {
+    width: 100px; /* Adjust size */
+    height: auto;
+    position: top;
+    top: 50%;
+    transform: translateY(-110%);
+  } 
+  
