@@ -1,46 +1,42 @@
-"use client"; // ✅ Required for client-side rendering in Next.js
-
+"use client";
+import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
-import { useRouter, usePathname } from "next/navigation";
-import { auth } from "../lib/firebase";
-import "./styles/Navbar.css";
+import { auth } from "../lib/firebase"; // ✅ Import Firebase auth
+import "./styles/Navbar.css"; // ✅ Import styles
 
 const Navbar = () => {
   const router = useRouter();
-  const pathname = usePathname(); // ✅ Get the current page
-  const [loggedInUser, setLoggedInUser] = useState(null);
+  const [loggedInUser, setLoggedInUser] = useState("");
 
-  // ✅ Fetch Logged-In User
+  // ✅ Get logged-in user's username
   useEffect(() => {
-    auth.onAuthStateChanged((currentUser) => {
-      if (currentUser) {
-        const emailUsername = currentUser.email.split("@")[0]; // Extract username from email
-        setLoggedInUser(emailUsername);
-      } else {
-        setLoggedInUser(null);
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        setLoggedInUser(user.email.split("@")[0]); // Extract username from email
       }
     });
   }, []);
 
-  // ✅ Fix UI Glitch: Use `router.replace()` instead of `push()`
-  const navigateTo = (route) => {
-    if (pathname !== route) {
-      router.replace(route); // ✅ Prevent unnecessary page reloading
-    }
-  };
-
-  const handleLogout = async () => {
-    await auth.signOut();
-    router.push("/login"); // ✅ Redirect to login
+  // ✅ Function to navigate & force reload for Feed and Profile
+  const handleReloadAndNavigate = (path) => {
+    router.push(path); // Navigate
+    setTimeout(() => {
+      window.location.reload(); // ✅ Forces styles to reapply
+    }, 100); // Small delay ensures smooth transition
   };
 
   return (
     <nav className="navbar">
-      <button onClick={() => navigateTo("/feed")}>🏠 Home</button>
-      {loggedInUser && (
-        <button onClick={() => navigateTo(`/user/${loggedInUser}`)}>👤 Profile</button>
-      )}
-      <button onClick={handleLogout}>🚪 Logout</button>
+      <div className="nav-container">
+        <button className="nav-btn" onClick={() => handleReloadAndNavigate("/feed")}>🏠 Home</button>
+        
+        {/* ✅ Profile Button redirects to user's own profile */}
+        <button className="nav-btn" onClick={() => handleReloadAndNavigate(`/user/${loggedInUser}`)}>
+          👤 Profile
+        </button>
+
+        <button className="nav-btn" onClick={() => router.push("/login")}>🚪 Logout</button>
+      </div>
     </nav>
   );
 };

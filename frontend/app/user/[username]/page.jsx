@@ -54,32 +54,35 @@ export default function UserProfilePage() {
   const handleUpdateProfile = async () => {
     const formData = new FormData();
     formData.append("bio", bio);
+  
+    // ✅ Append profile picture only if a new file was selected
     if (selectedFile) {
       formData.append("profilePicture", selectedFile);
     }
-
+  
     console.log("🔍 Sending request:", formData.get("bio"), formData.get("profilePicture"));
-
+  
     try {
       const response = await fetch(`http://localhost:5001/api/users/${username}`, {
         method: "PUT",
         body: formData,
       });
-
-      console.log("📡 Response Status:", response.status);
-      const updatedUser = await response.json();
-      console.log("✅ Response Data:", updatedUser);
-
+  
       if (!response.ok) throw new Error("Failed to update profile");
-
+  
+      const updatedUser = await response.json();
+      console.log("✅ Updated User Data:", updatedUser);
+  
+      // ✅ Ensure UI updates correctly after saving
       setUser(updatedUser.user);
-      setProfilePicture(updatedUser.user.profilePicture);
+      setProfilePicture(updatedUser.user.profilePicture); // ✅ Update profile picture immediately
+      setSelectedFile(null); // ✅ Reset selected file after successful upload
       setIsEditing(false);
     } catch (error) {
       console.error("🔥 Error updating profile:", error);
     }
   };
-
+  
   // ✅ Handle Image Preview Before Upload
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -98,11 +101,14 @@ export default function UserProfilePage() {
       <div className="profile-info">
         {/* ✅ Profile Picture */}
         {user.profilePicture ? (
-          <img
+          <img 
             src={selectedFile ? profilePicture : `http://localhost:5001${user.profilePicture}`} 
-            alt="Profile"
-            className="profile-pic"
-          />
+            alt="Profile" 
+            className={`profile-pic ${profilePicture ? "loaded" : "loading"}`}
+            onLoad={() => console.log("✅ Image Loaded Successfully")}
+            onError={() => console.error("🔥 Error Loading Image")}
+        />
+        
         ) : (
           <img 
             src="/default-profile.png" 
