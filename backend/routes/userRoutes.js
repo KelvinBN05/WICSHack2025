@@ -4,11 +4,17 @@ const User = require("../models/User");
 const router = express.Router();
 
 // Create a new user
-router.post("/", async (req, res) => {
+router.post("/register", async (req, res) => {
+  console.log("login request received", req.body);
   try {
-    const { username, email, profilePicture, bio } = req.body;
-    const newUser = new User({ username, email, profilePicture, bio });
-    await newUser.save();
+    const { uid, username, email, profilePicture, bio } = req.body;
+    //check if user already exists
+    let newUser = await User.findOne({ uid })
+    // Check if user already exists
+    if (!newUser) {
+      newUser = new User({ uid, username, email, profilePicture, bio });
+      await newUser.save();
+    }
     res.status(201).json(newUser);
   } catch (error) {
     console.error("Error creating user:", error); // <-- Add this line to log errors
