@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { auth } from "../lib/firebase";
-import { User, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "firebase/auth";
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "firebase/auth";
 import "./Login.css";
 
 const Login = () => {
@@ -13,7 +13,6 @@ const Login = () => {
   const [isSignup, setIsSignup] = useState(false); // Track whether the user is signing up or logging in
   const [user, setUser] = useState(null); // Store user authentication state
   const router = useRouter();
-
 
   // Monitor authentication state
   useEffect(() => {
@@ -43,29 +42,29 @@ const Login = () => {
     try {
       let userCredential;
       if (isSignup) {
-        // Sign up a new user
+        // ✅ Sign up a new user
         userCredential = await createUserWithEmailAndPassword(auth, email, password);
       } else {
-        // Log in existing user
+        // ✅ Log in existing user
         userCredential = await signInWithEmailAndPassword(auth, email, password);
       }
       const user = userCredential.user;
-      
-      // Collect the additional user info (you can prompt the user for these)
-      const username = "defaultUsername";  // Example, you may want to get this from an input
-      const profilePicture = "";  // Example, you can leave it empty or ask the user to upload
-      const bio = "";  // Example, you can leave it empty or ask the user to input their bio
 
-      // Send the additional fields along with Firebase user data to backend
+      // ✅ Automatically extract username from email before '@'
+      const username = email.split("@")[0];
+
+      // ✅ Default profile values
+      const profilePicture = "/defaultprofile.png"; // Set default profile picture
+      const bio = "New to GainsVille!"; // Set default bio
+
+      // ✅ Send user data to backend
       const response = await fetch("http://localhost:5001/api/users/register", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           uid: user.uid,
           email: user.email,
-          username,
+          username, // ✅ Username set automatically
           profilePicture,
           bio,
         }),
@@ -74,11 +73,9 @@ const Login = () => {
       const data = await response.json();
 
       if (response.ok) {
-        // Handle success
         console.log(data.message);
-        router.push("/");  // Redirect to the main page or user dashboard
+        router.push("/"); // Redirect to home or user dashboard
       } else {
-        // Handle error
         setError(data.error || "Registration failed. Please try again.");
       }
 
@@ -99,9 +96,6 @@ const Login = () => {
 
   return (
     <div className="login-container">
-      {/* <div className="logo">
-        <h1>🏋️ GainsVille</h1>
-      </div> */}
       <header className="header">
         <div className="header-container">
           <img src="/Rectangle.png" alt="Background" className="header-bg" />
@@ -111,50 +105,49 @@ const Login = () => {
         </div>
       </header>
       <div className="login-box">
-      {!user ? (
-        <>
+        {!user ? (
+          <>
             <h1>{isSignup ? "Sign Up" : "Log In"}</h1>
             <form onSubmit={handleAuth}>
-            <label>Email</label>
-            <input
+              <label>Email</label>
+              <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter email"
                 required
-            />
+              />
 
-            <label>Password</label>
-            <input
+              <label>Password</label>
+              <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter password"
                 required
-            />
-            {error && <p className="error">{error}</p>}
-            <button type="submit" disabled={loading}>
-              {loading ? (isSignup ? "Signing Up..." : "Logging In...") : (isSignup ? "Sign Up" : "Log In")}
-            </button>
+              />
+              {error && <p className="error">{error}</p>}
+              <button type="submit" disabled={loading}>
+                {loading ? (isSignup ? "Signing Up..." : "Logging In...") : (isSignup ? "Sign Up" : "Log In")}
+              </button>
 
-            {/* <button type="submit">Sign In</button> */}
-            <a href="#">Forgot password?</a>
+              <a href="#">Forgot password?</a>
             </form>
             <div className="toggle-auth">
-            <p>
-              {isSignup ? "Already have an account?" : "Don't have an account?"}{" "}
-              <button onClick={() => setIsSignup(!isSignup)}>
-                {isSignup ? "Log In" : "Sign Up"}
-              </button>
-            </p>
-          </div>
+              <p>
+                {isSignup ? "Already have an account?" : "Don't have an account?"}{" "}
+                <button onClick={() => setIsSignup(!isSignup)}>
+                  {isSignup ? "Log In" : "Sign Up"}
+                </button>
+              </p>
+            </div>
           </>
         ) : (
-        <div className="logged-in">
-          <h2>Welcome, {user?.email}</h2>
-          <button onClick={handleLogout}>Log Out</button>
-        </div>
-      )}
+          <div className="logged-in">
+            <h2>Welcome, {user?.email}</h2>
+            <button onClick={handleLogout}>Log Out</button>
+          </div>
+        )}
       </div>
     </div>
   );
